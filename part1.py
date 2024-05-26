@@ -17,16 +17,21 @@ path = "/teamwork/input/data.parquet"
 df = spark.read.parquet(f'{path}')
 
 
-# 1 =====================
+# =============================== 
+# 1. TRANSACTION VOLUME OVER TIME
+# ===============================
+
 # Group by 'step' and 'type', then count the number of transactions in each group
 transaction_volume_over_time = df.groupBy("step", "type").count().orderBy(F.asc("step"))
 
 # Show the results
-# transaction_volume_over_time.rdd.map(lambda r: ','.join([str(c) for c in r])).saveAsTextFile(f"/teamwork/output/spark_ex1{sufix}")
 transaction_volume_over_time.write.parquet(f"/teamwork/output/spark_ex1{sufix}")
 
 
-# 2 =====================
+# =======================================================
+# 2. COUNT FRAUDULENT TRANSACTION  BY TYPE OF TRANSACTION
+# =======================================================
+
 # Filter for fraudulent transactions
 fraud_transactions = df.filter(df.isFraud == 1)
 
@@ -37,7 +42,10 @@ fraud_count_by_type = fraud_transactions.groupBy("type").count()
 fraud_count_by_type.write.parquet(f"/teamwork/output/spark_ex2{sufix}")
 
 
-# 3 =====================
+# ==========================================================
+# 3. MEAN TRANSACTION VALUE FOR ONLY FRAUDULENT TRANSACTIONS
+# ==========================================================
+
 # Filter for fraudulent transactions
 fraud_transactions = df.filter(df.isFraud == 1)
 
@@ -48,7 +56,10 @@ average_fraud_transaction_value = fraud_transactions.agg(F.mean("amount").alias(
 average_fraud_transaction_value.write.parquet(f"/teamwork/output/spark_ex3{sufix}")
 
 
-# 4 =====================
+# ==========================================================
+# 4. TOP CUSTOMERS BY TOTAL AMOUNT OF ALL THEIR TRANSACTIONS
+# ==========================================================
+
 # Group by 'nameOrig', sum the 'amount', and order by the sum in descending order
 top_customers_by_total_amount = df.groupBy("nameOrig").agg(F.sum("amount").alias("total_amount")).orderBy(F.desc("total_amount"))
 
@@ -56,7 +67,10 @@ top_customers_by_total_amount = df.groupBy("nameOrig").agg(F.sum("amount").alias
 top_customers_by_total_amount.write.parquet(f"/teamwork/output/spark_ex4{sufix}")
 
 
-# 5 =====================
+# =============================== 
+# 5. TRANSACTION VOLUME OVER TIME
+# =============================== 
+
 # Define a threshold for what you consider a large transaction
 large_amount_threshold = 200000
 
