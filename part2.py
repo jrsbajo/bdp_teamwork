@@ -35,9 +35,9 @@ df = spark.read.parquet(f'{path}')
 
 df = df.repartition(6)
 
-filtered_data = df.filter(col("isFlaggedFraud") == 1).subtract(filtered_data)
-filtered_data = filtered_data.drop("isFlaggedFraud", "nameOrig", "nameDest")
-filtered_data = filtered_data.dropna()
+filtered_data = df.filter(col("isFlaggedFraud") == 1)
+filtered_data = df.subtract(filtered_data)
+filtered_data = filtered_data.drop("isFlaggedFraud", "nameOrig", "nameDest").dropna()
 
 # Cast columns to numeric types
 numeric_cols = ["amount", "oldbalanceOrg", "newbalanceOrig", "oldbalanceDest", "newbalanceDest"]
